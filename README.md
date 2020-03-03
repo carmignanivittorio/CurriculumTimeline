@@ -1,2 +1,0 @@
-# CurriculumTimeline
-Created with CodeSandbox
