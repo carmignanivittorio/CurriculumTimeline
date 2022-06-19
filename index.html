@@ -1,10 +1,26 @@
 <html lang="en-GB">
 <head>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="lib.js"></script>
     <script type="text/javascript">
         google.charts.load("current", {packages: ["timeline"]});
 
+        const github = "carmignanivittorio/CurriculumTimeline";
         const font = 'Poppins';
+        let urls = {};
+
+        fetch("https://api.github.com/repos/" + github + "/commits?page=1&per_page=1").then(
+            function (response) {
+                return response.json();
+            }
+        ).then(
+            function (data) {
+                let time = data[0].commit.author.date;
+                let last_update = new Date(time);
+                // modify span last_update with the last update date
+                document.getElementById("last_update").innerHTML = last_update.toLocaleDateString();
+            }
+        )
 
         /**
          * Draws a timeline chart.
@@ -28,59 +44,21 @@
                 }
             };
 
+            google.visualization.events.addListener(chart, 'select', function () {
+                let selection = chart.getSelection();
+                if (selection.length > 0) {
+                    let url = urls[hash_item_from_row(
+                        dataTable.getValue(selection[0].row, 0), dataTable.getValue(selection[0].row, 1)
+                    )];
+                    if (url) {
+                        window.open(url);
+                    }//if
+                }//if
+            });
+
             chart.draw(dataTable, options);
         }//draw_chart
 
-        /**
-         * @param date: string in format YYYY-MM-DD
-         * @returns {Date}: the date with the time set to 00:00:00, if $date is null, return the current date
-         */
-        function get_today_if_null(date) {
-            return date == null ? new Date() : new Date(date);
-        }//get_today_if_null
-
-        /**
-         * @description: get row to be added on the google data table
-         * @param item: item coming from the json
-         * @returns {{term: string, name: string, start: Date, end: Date}}
-         */
-        function get_array_for_table(item) {
-            return [
-                item['where'],
-                item['role'],
-                get_today_if_null(item.from),
-                get_today_if_null(item.to),
-            ]
-        }//get_array_for_table
-
-        /**
-         * @description: get the data to be used to draw the chart
-         * @param step: all the items with a "step" [like al work"]
-         * @returns {Date[]}: duration of the step
-         * **/
-        function get_min_max_date(step) {
-            let min_date = new Date();
-            let max_date = new Date(1990, 1, 1);
-            step.forEach(function (array) {
-                min_date = new Date(Math.min(min_date, array[2]));
-                max_date = new Date(Math.max(max_date, array[3]));
-            });
-            return [min_date, max_date];
-        }//get_min_max_date
-
-        /**
-         * @param start_date
-         * @param end_date
-         * @returns {string} Years $Y and $M months
-         */
-        function get_duration_in_years_and_months(start_date, end_date) {
-            const start = new Date(start_date);
-            const end = new Date(end_date);
-            const diff = end.getTime() - start.getTime();
-            const diff_years = Math.floor(diff / (1000 * 3600 * 24 * 365));
-            const diff_months = Math.floor((diff - (diff_years * 1000 * 3600 * 24 * 365)) / (1000 * 3600 * 24 * 30));
-            return diff_years + " Years " + (diff_months > 0 ? "and " + diff_months + " months" : "");
-        }//get_duration_in_years_and_months
 
         /**
          * Add the data to the google data table
@@ -88,11 +66,14 @@
          * @param tag
          */
         function add_draw(data, tag) {
-            let f = function func() {draw_chart(data, tag);};
+            let f = function func() {
+                draw_chart(data, tag);
+            };
             google.charts.setOnLoadCallback(f);
         }//add_draw
 
 
+        // Get the data from the JSON file and draw the charts
         fetch('data.json')
             .then(function (response) {
                 return response.json();
@@ -104,6 +85,7 @@
                     let life = [];
 
                     data.forEach(function (item) {
+                        urls[hash_item(item)] = item['url'];
                         let array = get_array_for_table(item);
                         try {
                             steps[item.tag].push(array);
@@ -114,13 +96,17 @@
                         life.push(array);
                     });
 
-                    let sort_function = function (a, b) {return b[3] - a[3];};
+                    let sort_function = function (a, b) {
+                        return b[3] - a[3];
+                    };
 
                     // order life by end date desc
                     life.sort(sort_function);
 
                     // order each step by end date desc
-                    tags.forEach(function (tag) {steps[tag].sort(sort_function);});
+                    tags.forEach(function (tag) {
+                        steps[tag].sort(sort_function);
+                    });
 
                     // Draw the chart for each step and the Life chart
                     tags.forEach(function (tag) {
@@ -130,52 +116,29 @@
                         document.getElementById(tag + "-dur").textContent = get_duration_in_years_and_months(min_max_date[0], min_max_date[1]);
                     });
                     add_draw(life, 'life');
-                }
+                }//function
             )
     </script>
     <link
             href="https://fonts.googleapis.com/css?family=Poppins"
             rel="stylesheet"
     />
-    <style>
-        body {
-            font-family: "Poppins", sans-serif;
-            background-image: url('mesh.png');
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-
-        h1 {
-            font-size: 4em;
-            font-weight: bold;
-            color: #fff;
-            /*text-shadow: 0 0 0.2em #000;*/
-        }
-
-        h2 {
-            font-size: 2.2em;
-            font-weight: bold;
-            color: #fff;
-            /*text-shadow: 0 0 0.2em #000;*/
-        }
-
-        #main {
-            padding-top: 30px;
-            margin: auto;
-            width: 80%;
-            min-width: 500px;
-            max-width: 850px;
-        }
-    </style>
+    <link href="style.css" rel="stylesheet"/>
     <title>Vittorio's Timeline</title>
 </head>
 <body>
 
 <div id="main">
+    <p style="font-size: 0.7em; text-align: right">
+        Last update <span id="last_update"></span><br>
+        Based on last <a href="https://github.com/carmignanivittorio/CurriculumTimeline" target="_blank">commit</a>
+    </p>
     <h1>Vittorio's Timeline</h1>
+    <a class="button" href="https://unequaled-turn-fc8.notion.site/Hi-d24db0042a024af098d86b64a3be2d10" target="_blank">Vittorio's
+        Notion</a>
     <h2>&#128640 Life</h2>
     <div id="life" style="height: 500px;"></div>
-    <h2>&#128188 Working Life - <span id="work-dur">asd</span></h2>
+    <h2>&#128188 Working Life - <span id="work-dur"></span></h2>
     <div id="work" style="height: 250px;"></div>
     <h2>&#127891 Student Life - <span id="education-dur"></span></h2>
     <div id="education" style="height: 220px;"></div>
