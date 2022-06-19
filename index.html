@@ -1,150 +1,187 @@
-<html>
-  <head>
-    <script
-      type="text/javascript"
-      src="https://www.gstatic.com/charts/loader.js"
-    ></script>
-
+<html lang="en-GB">
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-      google.charts.load("current", { packages: ["timeline"] });
-      google.charts.setOnLoadCallback(workingChart);
-      google.charts.setOnLoadCallback(volunteerChart);
-      google.charts.setOnLoadCallback(studentChart);
-      google.charts.setOnLoadCallback(lifeChart);
+        google.charts.load("current", {packages: ["timeline"]});
 
-      function drawChart(data, element_id) {
-        var container = document.getElementById(element_id);
-        var chart = new google.visualization.Timeline(container);
-        var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn({ type: "string", id: "Term" });
-        dataTable.addColumn({ type: "string", id: "Name" });
-        dataTable.addColumn({ type: "date", id: "Start" });
-        dataTable.addColumn({ type: "date", id: "End" });
-        dataTable.addRows(data);
-        chart.draw(dataTable);
-      }
+        const font = 'Poppins';
 
-      //Job
-      const ms_intern = [
-        "Microsoft",
-        "Software Engineer Intern",
-        new Date(2019, 3, 1),
-        new Date(2020, 11, 1)
-      ];
-      const fullbrain = [
-        "Fullbrain",
-        "Co-Founder",
-        new Date(2019, 5, 1),
-        new Date()
-      ];
-      const taml = [
-        "Technical University of Denmark",
-        "Teaching Assistant in Machine Learning",
-        new Date(2020, 1, 1),
-        new Date(2020, 5, 1)
-      ];
-      const tadb = [
-        "Technical University of Denmark",
-        "Teaching Assistant in Database Systems",
-        new Date(2020, 1, 1),
-        new Date(2020, 5, 1)
-      ];
-      const exdb = [
-        "Technical University of Denmark",
-        "External Lecturer in Database Systems",
-        new Date(2021, 1, 1),
-        new Date(2021, 5, 1)
-      ];
+        /**
+         * Draws a timeline chart.
+         * @param {Object} data The data for the chart.
+         * @param {string} element_id Element ID for the chart [div].
+         */
+        function draw_chart(data, element_id) {
+            const container = document.getElementById(element_id);
+            const chart = new google.visualization.Timeline(container);
+            let dataTable = new google.visualization.DataTable();
+            dataTable.addColumn({type: "string", id: "Where"});
+            dataTable.addColumn({type: "string", id: "Role"});
+            dataTable.addColumn({type: "date", id: "Start"});
+            dataTable.addColumn({type: "date", id: "End"});
+            dataTable.addRows(data);
 
-      //Volunteering
-      const aiesec = [
-        "Volunteering",
-        "AIESEC Mauritius",
-        new Date(2019, 5, 15),
-        new Date(2019, 7, 1)
-      ];
-      const localdistrict = [
-        "Volunteering",
-        "Local District",
-        new Date(2014, 8, 1),
-        new Date(2018, 8, 1)
-      ];
+            const options = {
+                timeline: {
+                    rowLabelStyle: {fontName: font},
+                    barLabelStyle: {fontName: font}
+                }
+            };
 
-      //Uni
-      const bsc = [
-        "University of Padua",
-        "BSc Information Engineering",
-        new Date(2014, 8, 1),
-        new Date(2017, 8, 22)
-      ];
-      const mscpadua = [
-        "University of Padua",
-        "MSc Computer Science",
-        new Date(2017, 8, 23),
-        new Date(2020, 11, 7)
-      ];
-      const doublepadua = [
-        "University of Padua",
-        "Double degree project",
-        new Date(2017, 8, 23),
-        new Date(2020, 11, 14)
-      ];
-      const mscdtu = [
-        "Technical University of Denmark",
-        "MSc Human Centered Artificial Intelligence",
-        new Date(2018, 8, 1),
-        new Date(2020, 11, 7)
-      ];
-      const columbia = [
-        "Columbia University of New York",
-        "Artificial Intelligence Course",
-        new Date(2018, 1, 1),
-        new Date(2018, 7, 1)
-      ];
+            chart.draw(dataTable, options);
+        }//draw_chart
 
-      let all_steps = [];
+        /**
+         * @param date: string in format YYYY-MM-DD
+         * @returns {Date}: the date with the time set to 00:00:00, if $date is null, return the current date
+         */
+        function get_today_if_null(date) {
+            return date == null ? new Date() : new Date(date);
+        }//get_today_if_null
 
-      function workingChart() {
-        const data = [ms_intern, fullbrain, taml, tadb, exdb];
-        all_steps.push.apply(all_steps, data);
-        drawChart(data, "working");
-      }
+        /**
+         * @description: get row to be added on the google data table
+         * @param item: item coming from the json
+         * @returns {{term: string, name: string, start: Date, end: Date}}
+         */
+        function get_array_for_table(item) {
+            return [
+                item['where'],
+                item['role'],
+                get_today_if_null(item.from),
+                get_today_if_null(item.to),
+            ]
+        }//get_array_for_table
 
-      function volunteerChart() {
-        const data = [aiesec, localdistrict];
-        all_steps.push.apply(all_steps, data);
-        drawChart(data, "volunteer");
-      }
+        /**
+         * @description: get the data to be used to draw the chart
+         * @param step: all the items with a "step" [like al work"]
+         * @returns {Date[]}: duration of the step
+         * **/
+        function get_min_max_date(step) {
+            let min_date = new Date();
+            let max_date = new Date(1990, 1, 1);
+            step.forEach(function (array) {
+                min_date = new Date(Math.min(min_date, array[2]));
+                max_date = new Date(Math.max(max_date, array[3]));
+            });
+            return [min_date, max_date];
+        }//get_min_max_date
 
-      //
-      function studentChart() {
-        const data = [bsc, mscdtu, mscpadua, columbia, doublepadua];
-        all_steps.push.apply(all_steps, data);
-        drawChart(data, "student");
-      }
+        /**
+         * @param start_date
+         * @param end_date
+         * @returns {string} Years $Y and $M months
+         */
+        function get_duration_in_years_and_months(start_date, end_date) {
+            const start = new Date(start_date);
+            const end = new Date(end_date);
+            const diff = end.getTime() - start.getTime();
+            const diff_years = Math.floor(diff / (1000 * 3600 * 24 * 365));
+            const diff_months = Math.floor((diff - (diff_years * 1000 * 3600 * 24 * 365)) / (1000 * 3600 * 24 * 30));
+            return diff_years + " Years " + (diff_months > 0 ? "and " + diff_months + " months" : "");
+        }//get_duration_in_years_and_months
 
-      function lifeChart() {
-        drawChart(all_steps, "life");
-      }
+        /**
+         * Add the data to the google data table
+         * @param data
+         * @param tag
+         */
+        function add_draw(data, tag) {
+            let f = function func() {draw_chart(data, tag);};
+            google.charts.setOnLoadCallback(f);
+        }//add_draw
+
+
+        fetch('data.json')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(
+                function (data) {
+                    let tags = [];
+                    let steps = {};
+                    let life = [];
+
+                    data.forEach(function (item) {
+                        let array = get_array_for_table(item);
+                        try {
+                            steps[item.tag].push(array);
+                        } catch (e) {
+                            steps[item.tag] = [array];
+                            tags.push(item.tag);
+                        }
+                        life.push(array);
+                    });
+
+                    let sort_function = function (a, b) {return b[3] - a[3];};
+
+                    // order life by end date desc
+                    life.sort(sort_function);
+
+                    // order each step by end date desc
+                    tags.forEach(function (tag) {steps[tag].sort(sort_function);});
+
+                    // Draw the chart for each step and the Life chart
+                    tags.forEach(function (tag) {
+                        add_draw(steps[tag], tag);
+                        let min_max_date = get_min_max_date(steps[tag])
+                        // edit span with id with duration in words
+                        document.getElementById(tag + "-dur").textContent = get_duration_in_years_and_months(min_max_date[0], min_max_date[1]);
+                    });
+                    add_draw(life, 'life');
+                }
+            )
     </script>
     <link
-      href="https://fonts.googleapis.com/css?family=Poppins"
-      rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Poppins"
+            rel="stylesheet"
     />
     <style>
-      body {
-        font-family: "Poppins", sans-serif;
-      }
+        body {
+            font-family: "Poppins", sans-serif;
+            background-image: url('mesh.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        h1 {
+            font-size: 4em;
+            font-weight: bold;
+            color: #fff;
+            /*text-shadow: 0 0 0.2em #000;*/
+        }
+
+        h2 {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #fff;
+            /*text-shadow: 0 0 0.2em #000;*/
+        }
+
+        #main {
+            padding-top: 100px;
+            margin: auto;
+            width: 80%;
+            min-width: 500px;
+            max-width: 850px;
+        }
     </style>
-  </head>
-  <body>
-    <h1>Life</h1>
-    <div id="life" style="height: 400px;"></div>
-    <h1>Working Life</h1>
-    <div id="working" style="height: 220px;"></div>
-    <h1>Student Life</h1>
-    <div id="student" style="height: 220px;"></div>
-    <h1>Volunteering Life</h1>
-    <div id="volunteer"></div>
-  </body>
+    <title>Vittorio's Timeline</title>
+</head>
+<body>
+
+<div id="main">
+    <h1>Vittorio's Timeline</h1>
+    <h2>&#128640 Life</h2>
+    <div id="life" style="height: 500px;"></div>
+    <h2>&#128188 Working Life - <span id="work-dur">asd</span></h2>
+    <div id="work" style="height: 250px;"></div>
+    <h2>&#127891 Student Life - <span id="education-dur"></span></h2>
+    <div id="education" style="height: 220px;"></div>
+    <h2>&#9996 Volunteering Life - <span id="volunteering-dur"></span></h2>
+    <div id="volunteering"></div>
+</div>
+
+</body>
 </html>

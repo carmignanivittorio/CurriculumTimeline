@@ -1,0 +1,94 @@
+[
+  {
+    "where": "Microsoft",
+    "role": "Software Engineer Intern",
+    "from": "2019/03/01",
+    "to": "2020/11/01",
+    "tag": "work"
+  },
+  {
+    "where": "FullBrain",
+    "role": "Co-Founder and CTO",
+    "from": "2019/05/01",
+    "to": null,
+    "tag": "work"
+  },
+  {
+    "where": "Dada Stake Crypto",
+    "role": "Co-Founder and CTO",
+    "from": "2022/03/01",
+    "to": null,
+    "tag": "work"
+  },
+
+  {
+    "where": "Technical University of Denmark",
+    "role": "Teaching Assistant in Machine Learning",
+    "from": "2020/01/01",
+    "to": "2020/05/01",
+    "tag": "work"
+  },
+  {
+    "where": "Technical University of Denmark",
+    "role": "External Lecturer in Database Systems",
+    "from": "2021/01/01",
+    "to": "2021/05/01",
+    "tag": "work"
+  },
+  {
+    "where": "Technical University of Denmark",
+    "role": "Teaching Assistant in Database Systems",
+    "from": "2020/01/01",
+    "to": "2020/05/01",
+    "tag": "work"
+  },
+  {
+    "where": "University of Padua",
+    "role": "BSc Information Engineering",
+    "from": "2014/08/01",
+    "to": "2017/08/22",
+    "tag": "education"
+  },
+  {
+    "where": "University of Padua",
+    "role": "MSc Computer Science",
+    "from": "2017/08/23",
+    "to": "2020/11/07",
+    "tag": "education"
+  },
+  {
+    "where": "University of Padua",
+    "role": "Double degree project",
+    "from": "2017/08/23",
+    "to": "2020/11/14",
+    "tag": "education"
+  },
+  {
+    "where": "Technical University of Denmark",
+    "role": "MSc Human Centered Artificial Intelligence",
+    "from": "2018/08/01",
+    "to": "2020/11/07",
+    "tag": "education"
+  },
+  {
+    "where": "Columbia University of New York",
+    "role": "Artificial Intelligence Course",
+    "from": "2018/01/01",
+    "to": "2018/07/01",
+    "tag": "education"
+  },
+  {
+    "where": "Local District",
+    "role": "Volunteer",
+    "from": "2014/08/01",
+    "to": "2018/08/01",
+    "tag": "volunteering"
+  },
+  {
+    "where": "AIESEC Mauritius",
+    "role": "Volunteer",
+    "from": "2019/05/15",
+    "to": "2019/07/01",
+    "tag": "volunteering"
+  }
+]
