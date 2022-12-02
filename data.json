@@ -11,7 +11,7 @@
     "where": "FullBrain",
     "role": "Co-Founder and CTO",
     "from": "2019/05/01",
-    "to": null,
+    "to": "2022/11/01",
     "tag": "work",
     "url": "https://vittoriocarmignani.notion.site/CTO-8cc47aa74e9741d4a4f1503c4ada7562"
   },
@@ -22,6 +22,14 @@
     "to": null,
     "tag": "work",
     "url": "https://vittoriocarmignani.notion.site/CTO-6854778a312148548333c5d9f42c931b"
+  },
+  {
+    "where": "Cointracker",
+    "role": "Data Engineer at Growth",
+    "from": "2022/11/01",
+    "to": null,
+    "tag": "work",
+    "url": ""
   },
 
   {
